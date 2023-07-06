@@ -133,7 +133,7 @@ class ClienteBuscaData(tk.Toplevel):
         
             self.buttonSubmit = tk.Button(self.frameButton ,text="Enter")      
             self.buttonSubmit.pack(side="left")
-            self.buttonSubmit.bind("<Button>", controle.consultaFaturamentoClientePeriodo)
+            self.buttonSubmit.bind("<Button>", controle.consultaVendasClientePeriodo)
 
         def mostraJanela(self, titulo, msg):
             messagebox.showinfo(titulo, msg)
@@ -231,7 +231,7 @@ class CtrlCliente:
         else:
             self.limiteFat.mostraJanela('Cliente não encontrado', f'O cliente com o cpf {cpf} não foi encontrado.')        
 
-    def consultaFaturamentoClientePeriodo(self, event):
+    def consultaVendasClientePeriodo(self, event):
         cpf = self.limiteVndCli.inputCpf.get()
         data_inicial = self.limiteVndCli.inputDataInicio.get()
         data_final = self.limiteVndCli.inputDataFim.get()
@@ -239,7 +239,15 @@ class CtrlCliente:
         vendas_cliente = self.controlador.ctrlVendas.consultaVendasClientePeriodo(cpf, data_inicial, data_final)
 
         if vendas_cliente:
-            notas_fiscais = "\n".join([f"Nota Fiscal: {nota.cliente} | Valor Total: R${nota.valor_total:.2f}" for nota in vendas_cliente])
+            notas_fiscais = ""
+            for nota in vendas_cliente:
+                total_value = 0
+                for venda in nota.listaVendas:
+                    produto = venda.produto
+                    quantity = venda.quantidade
+                    value = produto.valorVenda
+                    total_value += float(value) * int(quantity)
+                notas_fiscais += f"Nota Fiscal: {nota.cliente} | Valor Total: R${total_value:.2f}\n"
             self.limiteVndCli.mostraJanela("Notas Fiscais", notas_fiscais)
         else:
             self.limiteVndCli.mostraJanela("Cliente não encontrado", f"O cliente com o cpf {cpf} não possui notas fiscais no período informado.")

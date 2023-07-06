@@ -27,8 +27,7 @@ class LimitePrincipal:
         self.menubar.add_cascade(label='Cliente', menu=self.clienteMenu)
 
         self.vendasMenu.add_command(label='Registrar Venda', command=self.controle.cadastraVenda)
-        self.vendasMenu.add_command(label='Faturamento por período', command=self.controle.consultaFaturamentoPeriodo)
-        self.vendasMenu.add_command(label='Lucro por período', command=self.controle.consultaLucroPeriodo)
+        self.vendasMenu.add_command(label='Faturamento e lucro por período', command=self.controle.consultaFaturamentoPeriodo)
         self.menubar.add_cascade(label='Vendas', menu=self.vendasMenu)
 
         self.menubar.add_command(label="Fechar", command=self.controle.fecharProg)
@@ -77,10 +76,7 @@ class ControlePrincipal:
         self.ctrlVendas.inserirVenda()
 
     def consultaFaturamentoPeriodo(self):
-        self.ctrlVendas.consultaFaturamentoPeriodo()
-
-    def consultaLucroPeriodo(self):
-        self.ctrlVendas.consultaLucroPeriodo()
+        self.ctrlVendas.procuraLucFat()
 
     def fecharProg(self):
         self.ctrlProduto.salvaProdutos()

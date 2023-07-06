@@ -138,6 +138,45 @@ class ClienteFat(tk.Toplevel):
     def mostraJanela(self, titulo, msg):
         messagebox.showinfo(titulo, msg)
 
+class LucroFaturamento(tk.Toplevel):
+    def __init__(self, controle):
+        tk.Toplevel.__init__(self)
+        self.geometry('250x50')
+        self.title("Cliente")
+        self.controle = controle
+
+        self.frameDataInicio = tk.Frame(self)
+        self.frameDataFim = tk.Frame(self)
+        self.frameButton = tk.Frame(self)
+        self.frameDataInicio.pack()
+        self.frameDataFim.pack()
+        self.frameButton.pack()
+
+        self.labelDataInicio = tk.Label(self.frameDataInicio,text="Data Inicio: ")
+        self.labelDataInicio.pack(side="left")
+        self.labelDataFim = tk.Label(self.frameDataFim,text="Data Fim: ")
+        self.labelDataFim.pack(side="left")
+
+        self.inputDataInicio = tk.Entry(self.frameDataInicio, width=20)
+        self.inputDataInicio.pack(side="left")
+        self.inputDataFim = tk.Entry(self.frameDataFim, width=20)
+        self.inputDataFim.pack(side="left")
+    
+        self.buttonLucro = tk.Button(self.frameButton ,text="Lucro")      
+        self.buttonLucro.pack(side="left")
+        self.buttonLucro.bind("<Button>", controle.consultaLucroPeriodo)
+
+        self.buttonFaturamento = tk.Button(self.frameButton ,text="Faturamento")      
+        self.buttonFaturamento.pack(side="left")
+        self.buttonFaturamento.bind("<Button>", controle.consultaFaturamentoPeriodo)
+
+        self.buttonSubmit = tk.Button(self.frameButton ,text="Enter")      
+        self.buttonSubmit.pack(side="left")
+        self.buttonSubmit.bind("<Button>", controle.closeHandler)
+
+    def mostraJanela(self, titulo, msg):
+        messagebox.showinfo(titulo, msg)
+
 class CtrlVendas:
     def __init__(self, controle):
         if not os.path.isfile("notafiscais.pickle"):
@@ -158,6 +197,9 @@ class CtrlVendas:
 
     def procuraFatCliente(self):
         self.limiteCliFat = ClienteFat(self)
+
+    def procuraLucFat(self):
+        self.limiteLucFat = LucroFaturamento(self)
     
     def getNotasFiscais(self):
         notas = []
@@ -185,7 +227,6 @@ class CtrlVendas:
         for nota in self.notasFiscais:
             notasAux.append(nota)
         return notasAux
-
     
     def cadastraNotaFiscal(self, event):
         print(self.listaVendas)
@@ -221,7 +262,6 @@ class CtrlVendas:
                     faturamento_total += faturamento
 
         self.limiteProFat.mostraJanela('Faturamento', f'Faturamento total: R${faturamento_total}')
-
     
     def adicionaProduto(self, event):
         id = self.viewNota.inputProduto.get()
@@ -263,7 +303,55 @@ class CtrlVendas:
             if notaFiscal.cliente == cliente:
                 notasCliente.append(notaFiscal)
         return notasCliente
+    
+    def consultaVendasClientePeriodo(self, cpf, data_inicial, data_final):
+        notas_fiscais = self.getListaNotasFiscais()
+
+        vendas_cliente = []
+        for nota_fiscal in notas_fiscais:
+            if nota_fiscal.cliente == cpf:
+                data_nota = nota_fiscal.data
+                if data_inicial <= data_nota <= data_final:
+                    vendas_cliente.append(nota_fiscal)
+
+        return vendas_cliente
+
+    def consultaFaturamentoPeriodo(self, event):
+        data_inicial = self.limiteLucFat.inputDataInicio.get()
+        data_final = self.limiteLucFat.inputDataFim.get()
+
+        # Filter the invoices within the specified date range
+        notas_periodo = [nota for nota in self.notasFiscais if data_inicial <= nota.data <= data_final]
+
+        faturamento_total = 0
+        for nota in notas_periodo:
+            for venda in nota.listaVendas:
+                faturamento = float(venda.produto.valorVenda) * int(venda.quantidade)
+                faturamento_total += faturamento
+
+        self.limiteLucFat.mostraJanela("Faturamento Total:", faturamento_total)
+
+    def consultaLucroPeriodo(self, event):
+        data_inicial = self.limiteLucFat.inputDataInicio.get()
+        data_final = self.limiteLucFat.inputDataFim.get()
+
+        # Filter the invoices within the specified date range
+        notas_periodo = [nota for nota in self.notasFiscais if data_inicial <= nota.data <= data_final]
+
+        lucro_total = 0
+        for nota in notas_periodo:
+            for venda in nota.listaVendas:
+                produto = venda.produto
+                valor_custo = produto.valorCompra
+                valor_venda = produto.valorVenda
+                lucro = (float(valor_venda) - float(valor_custo)) * int(venda.quantidade)
+                lucro_total += lucro
+
+        self.limiteLucFat.mostraJanela("Lucro Total:", lucro_total)
 
     def fechaHandler(self, event):
         self.listaVendas.clear()
         self.viewNota.destroy()
+
+    def closeHandler(self, event):
+        self.destroy()
