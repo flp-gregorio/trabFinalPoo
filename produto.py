@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import os.path
 import pickle
+from datetime import datetime
 
 class Produto:
     def __init__(self, codigo, descricao, valorCompra, valorVenda, quantidade):
@@ -183,6 +184,13 @@ class CtrlProduto:
         cmp = self.limitePro.inputCmp.get()
         vnd = self.limitePro.inputVnd.get()
         qtd = self.limitePro.inputQtd.get()
+        if cod in self.getListaCodProdutos():
+            self.limitePro.mostraJanela('Produto já cadastrado', 'Quantidade atualizada')
+            for prod in self.listaProdutos:
+                if prod.codigo == cod:
+                    valor = int(prod.quantidade) + int(qtd)
+                    prod.setQuantidade = valor
+                    return
         produto = Produto(cod, des, cmp, vnd, qtd)
         self.listaProdutos.append(produto)
         self.limitePro.mostraJanela('Sucesso', 'Produto cadastrado com sucesso')
@@ -205,8 +213,12 @@ class CtrlProduto:
     def diminuiEstoque(self, cod, qtd):
         for prod in self.listaProdutos:
             if prod.codigo == cod:
-                valor = int(prod.quantidade) - qtd
-                prod.setQuantidade = valor
+                valor = int(prod.quantidade) - qtd 
+                if valor >= 0:
+                    prod.setQuantidade = valor
+                    return True
+                else:
+                    return False
 
     def getListaCodProdutos(self):
         listaCod = []

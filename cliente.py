@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import os.path
 import pickle
+from datetime import datetime
 
 class Cliente:
     def __init__(self, nome, email, cpf):
@@ -142,7 +143,7 @@ class ClienteFat(tk.Toplevel):
         def __init__(self, controle):
 
             tk.Toplevel.__init__(self)
-            self.geometry('250x50')
+            self.geometry('250x300')
             self.title("Cliente")
             self.controle = controle
 
@@ -211,6 +212,12 @@ class CtrlCliente:
                 self.limiteBsc.mostraJanela('Sucesso', str)
                 return
     
+    def getListaCpf(self):
+        listaCpf = []
+        for cliente in self.listaClientes:
+            listaCpf.append(cliente.cpf)
+        return listaCpf
+    
     def consultaFaturamentoCliente(self, event):
         cpf = self.limiteFat.inputCpf.get()
         notas = self.controlador.ctrlVendas.getListaNotasFiscais()
@@ -237,9 +244,9 @@ class CtrlCliente:
         data_final = self.limiteVndCli.inputDataFim.get()
 
         vendas_cliente = self.controlador.ctrlVendas.consultaVendasClientePeriodo(cpf, data_inicial, data_final)
-
+        cont = 1
         if vendas_cliente:
-            notas_fiscais = ""
+            notas_fiscais = "Notas para o cliente: " + cpf +"\n"
             for nota in vendas_cliente:
                 total_value = 0
                 for venda in nota.listaVendas:
@@ -247,7 +254,8 @@ class CtrlCliente:
                     quantity = venda.quantidade
                     value = produto.valorVenda
                     total_value += float(value) * int(quantity)
-                notas_fiscais += f"Nota Fiscal: {nota.cliente} | Valor Total: R${total_value:.2f}\n"
+                notas_fiscais += f"Nota Fiscal: {cont} | Valor Total: R${total_value:.2f}\n"
+                cont += 1
             self.limiteVndCli.mostraJanela("Notas Fiscais", notas_fiscais)
         else:
             self.limiteVndCli.mostraJanela("Cliente não encontrado", f"O cliente com o cpf {cpf} não possui notas fiscais no período informado.")
@@ -259,4 +267,3 @@ class CtrlCliente:
 
     def fechaHandler(self, event):
         self.limiteCli.destroy()
-
