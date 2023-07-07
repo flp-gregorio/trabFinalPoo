@@ -1,3 +1,6 @@
+#Felipe Alves Gregório - 2022008250
+#Nicolas de Sousa Moreira - 2022014472
+
 import tkinter as tk
 import produto as pro
 import cliente as cli
