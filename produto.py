@@ -265,12 +265,8 @@ class CtrlProduto:
         faturamento_total = 0
 
         notas = self.controlador.ctrlVendas.getListaNotasFiscais()
-        print('codigo produto: ', codigo_produto, '\n')
-        print(notas, '\n')
         for notaFiscal in notas:
-            print("caiu for 1\n")
             for venda in notaFiscal.listaVendas:
-                print("caiu for 2\n")
                 produto = venda.produto  
                 codFound = int(produto.codigo)
                 if codFound == codigo_produto:

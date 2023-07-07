@@ -105,7 +105,7 @@ class ClienteBuscaData(tk.Toplevel):
         def __init__(self, controle):
 
             tk.Toplevel.__init__(self)
-            self.geometry('250x50')
+            self.geometry('250x100')
             self.title("Cliente")
             self.controle = controle
 
@@ -120,9 +120,9 @@ class ClienteBuscaData(tk.Toplevel):
 
             self.labelCpf = tk.Label(self.frameCpf,text="Cpf: ")
             self.labelCpf.pack(side="left")
-            self.labelDataInicio = tk.Label(self.frameDataInicio,text="Data Inicio: ")
+            self.labelDataInicio = tk.Label(self.frameDataInicio,text="Data Inicio ex: dd-mm-aaaa: ")
             self.labelDataInicio.pack(side="left")
-            self.labelDataFim = tk.Label(self.frameDataFim,text="Data Fim: ")
+            self.labelDataFim = tk.Label(self.frameDataFim,text="Data Fim ex: dd-mm-aaaa: ")
             self.labelDataFim.pack(side="left")
 
             self.inputCpf = tk.Entry(self.frameCpf, width=20)
@@ -143,7 +143,7 @@ class ClienteFat(tk.Toplevel):
         def __init__(self, controle):
 
             tk.Toplevel.__init__(self)
-            self.geometry('250x300')
+            self.geometry('250x50')
             self.title("Cliente")
             self.controle = controle
 

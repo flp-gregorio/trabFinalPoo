@@ -142,7 +142,7 @@ class ClienteFat(tk.Toplevel):
 class LucroFaturamento(tk.Toplevel):
     def __init__(self, controle):
         tk.Toplevel.__init__(self)
-        self.geometry('250x300')
+        self.geometry('250x100')
         self.title("Cliente")
         self.controle = controle
 
@@ -230,7 +230,6 @@ class CtrlVendas:
         return notasAux
     
     def cadastraNotaFiscal(self, event):
-        print(self.listaVendas)
         listaAux = []
         cpf = self.viewNota.inputCliente.get()
 
@@ -283,10 +282,12 @@ class CtrlVendas:
         id = self.viewNota.inputProduto.get()
         produto = self.controlador.ctrlProduto.getProduto(id)
         quantidade = int(self.viewNota.inputQuantidade.get())
+        if quantidade == '' or quantidade <= 0:
+            self.viewNota.mostraJanela('Erro', 'Quantidade inválida')
+            return
         venda = Venda(produto, quantidade)
         self.listaVendas.append(venda)
         self.viewNota.mostraJanela('Sucesso', 'Produto cadastrado com sucesso')
-        print(self.listaVendas)
         self.clearProdutos(self)
     
     def getDesc(self, event):
@@ -365,4 +366,4 @@ class CtrlVendas:
         self.viewNota.destroy()
 
     def closeHandler(self, event):
-        self.destroy()
+        self.limiteLucFat.destroy()
